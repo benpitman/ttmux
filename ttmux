@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+leave()
+{
+    enableEcho
+    enableCursor
+    navigateTo 25 1
+    exit ${1:-1}
+}
+trap leave EXIT
+trap : ALRM
+
+boot()
+{
+    [[ -d "${CONFIG_DIR}" ]] || mkdir -p "${CONFIG_DIR}"
+    [[ -e "${CONFIG_PATH}" ]] || saveConfig
+    loadConfig
+}
+
+loadConfig()
+{
+    source "${CONFIG_PATH}"
+}
+
+printConfig()
+{
+    declare -p _windows _locations _panes
+}
+
+saveConfig()
+{
+    printConfig > "${CONFIG_PATH}"
+}
+
+showHelp ()
+{
+    cat << ____HELP
+Usage:
+
+
+Copyright © Ben Pitman
+____HELP
+}
+
+for subScript in ./sub_scripts/*; do
+    source "${subScript}"
+done
+
+boot
+
+while :; do
+    renderScreen
+    exit 0
+done
